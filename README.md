@@ -6,18 +6,18 @@ This 1-click deployment allows the user to deploy a Proof-of-Concept environment
 Owner role (or Contributor roles) for the Azure Subscription the template being deployed in. This is for creation of a separate Proof-of-Concept Resource Group and to delegate roles necessary for this proof of concept. Refer to this [official documentation](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for RBAC role-assignments.
 
 ## Deployment Steps
-1. Fork out [this github repository](https://github.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC) into your github account. 
+1. Fork out [this github repository](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click) into your github account. 
     
    **If you don't fork repo:** 
    + **The pre-populated dataset, pipeline and notebook will not be deployed**
    + **You will get a Github publishing error**
    
    
-  <!--  ![Fork](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/4.gif) -->
+  <!--  ![Fork](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/4.gif) -->
  
 2. Click 'Deploy To Azure' button given below to deploy all the resources.
 
-    [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FTest-Drive-Azure-Synapse-with-a-1-click-POC%2Fmain%2Fazuredeploy.json)
+    [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FTest-Drive-Synapse-Link-For-CosmosDB-With-1-Click%2Fmain%2Fazuredeploy.json)
 
    - Provide the values for:
 
@@ -36,7 +36,7 @@ Owner role (or Contributor roles) for the Azure Subscription the template being 
      - Resume Time
      - Pause Time
      - Option (Enabled or Disabled) for Transparent Data Encryption
-     - Github Username (username for the account where [this github repository](https://github.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC) was forked out into)
+     - Github Username (username for the account where [this github repository](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click) was forked out into)
 
    - Click 'Review + Create'.
    - On successful validation, click 'Create'.
@@ -66,7 +66,7 @@ Following resources are deployed with this template along with some RBAC role as
 - After logging in into your github account, click on 'Integrate' icon in the left panel. A blade will appear from right side of the screen.
 - Make sure that 'main' branch is selected as 'Working branch' and click 'Save'.
 
-![PostDeployment-1](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/1.gif)
+![PostDeployment-1](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/1.gif)
 
 - Now open the pipeline named 'TripFaresDataPipeline'.
 - Click on 'Parameters' tab at bottom of the window.
@@ -77,30 +77,30 @@ Following resources are deployed with this template along with some RBAC role as
     - KeyVaultName
     - DatalakeAccountName
 
-![PostDeployment-2](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/2.gif)
+![PostDeployment-2](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/2.gif)
 
 - After the parameters are updated, click on 'Commit all'.
 - After successful commit, click 'Publish'. A blade will appear from right side of the window.
 - Click 'Ok'.
 
-![PostDeployment-3](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/3.gif)
+![PostDeployment-3](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/3.gif)
 
 - Now to trigger the pipeline, click 'Add trigger' at the top panel and click 'Trigger now'.
 - Confirm the pipeline parameters' values and click 'Ok'.
 - You can check the pipeline status under 'Pipeline runs' in the 'Monitor' tab on the left panel.
 
-![PostDeployment-4](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/5.gif)
+![PostDeployment-4](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/5.gif)
 
 - To run the notebook (if spark pool is deployed), click on 'Develop' tab on the left panel.
 - Now under 'Notebooks' dropdown on left side of screen, click the notebook named 'Data Exploration and ML Modeling - NYC taxi predict using Spark MLlib'.
 - Click 'Run all' to run the notebook. (It might take a few minutes to start the session)
 
-![PostDeployment-5](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/6.gif)
+![PostDeployment-5](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/6.gif)
 
 - Once published all the resources will now be available in the live mode.
 - To switch to the live mode from git mode, click the drop down at top left corner and select 'Switch to live mode'.
 
-![PostDeployment-6](https://raw.githubusercontent.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/main/images/liveMode.PNG)
+![PostDeployment-6](https://raw.githubusercontent.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/main/images/liveMode.PNG)
 
 ## Steps for PowerBI integration
 
@@ -121,7 +121,7 @@ Create PowerBI workspace --> https://docs.microsoft.com/en-us/power-bi/collabora
 ![image](https://user-images.githubusercontent.com/47899900/130690579-6be54c37-dd83-446b-9646-241125f3a107.png)
 
 
-- Download [NYCTaxiCabTripAndFare.pbit] (https://github.com/Azure/Test-Drive-Azure-Synapse-with-a-1-click-POC/tree/main/synapsepoc/PowerBITemplate/NYCTaxiCabTripAndFare.pbit) from PowerBITemplate folder
+- Download [NYCTaxiCabTripAndFare.pbit] (https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/tree/main/synapsepoc/PowerBITemplate/NYCTaxiCabTripAndFare.pbit) from PowerBITemplate folder
 - Provide ServerName, DatabaseName and login credentials. ServerName and DatabaseName can be found in connection strings.
 - To get the connection string, click on Dedicated SQL Pool
 

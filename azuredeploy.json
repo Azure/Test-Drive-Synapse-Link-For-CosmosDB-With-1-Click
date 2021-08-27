@@ -533,7 +533,7 @@
           "type": "WorkspaceGitHubConfiguration",
           "hostName": "https://github.com",
           "accountName": "[parameters('githubUsername')]",
-          "repositoryName": "Test-Drive-Azure-Synapse-with-a-1-click-POC",
+          "repositoryName": "Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click",
           "rootFolder": "/synapsepoc",
           "collaborationBranch": "main"
         }
