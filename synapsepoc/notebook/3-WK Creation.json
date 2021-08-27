@@ -1,0 +1,49 @@
+{
+	"name": "3-WK Creation",
+	"properties": {
+		"folder": {
+			"name": "SynapseLink-CosmosDB"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from azureml.core import Workspace\r\n",
+					"\r\n",
+					"ws = Workspace.create(name='nashahzamlwrp',\r\n",
+					"               subscription_id='4eeedd72-d937-4243-86d1-c3982a84d924',\r\n",
+					"               resource_group='nashahzcsynp',\r\n",
+					"               create_resource_group=True,\r\n",
+					"               location='westus2'\r\n",
+					"               )"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}

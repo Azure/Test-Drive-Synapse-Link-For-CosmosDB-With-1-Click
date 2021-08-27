@@ -1,0 +1,100 @@
+{
+	"name": "1-RetailSalesDemoNB",
+	"properties": {
+		"folder": {
+			"name": "SynapseLink-CosmosDB"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "ws1sparkpool1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/4eeedd72-d937-4243-86d1-c3982a84d924/resourceGroups/nashahzcsynp/providers/Microsoft.Synapse/workspaces/cossynqs5xwfkv5txs4pocws1/bigDataPools/ws1sparkpool1",
+				"name": "ws1sparkpool1",
+				"type": "Spark",
+				"endpoint": "https://cossynqs5xwfkv5txs4pocws1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ws1sparkpool1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 5,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"dfStoreDemoGraphics = (spark\n",
+					"                .read\n",
+					"                .csv(\"/RetailData/StoreDemoGraphics.csv\", header=True, inferSchema='true')\n",
+					"              )\n",
+					"\n",
+					"dfRetailSales = (spark\n",
+					"                .read\n",
+					"                .csv(\"/RetailData/RetailSales.csv\", header=True, inferSchema='true')\n",
+					"              )\n",
+					"\n",
+					"dfProduct = (spark\n",
+					"                .read\n",
+					"                .csv(\"/RetailData/Products.csv\", header=True, inferSchema='true')\n",
+					"              )\n",
+					"\n",
+					"dfStoreDemoGraphics.write\\\n",
+					"    .format(\"cosmos.oltp\")\\\n",
+					"    .option(\"spark.synapse.linkedService\", \"RetailSalesDemoDB\")\\\n",
+					"    .option(\"spark.cosmos.container\", \"StoreDemoGraphics\")\\\n",
+					"    .option(\"spark.cosmos.write.upsertEnabled\", \"true\")\\\n",
+					"    .mode('append')\\\n",
+					"    .save()\n",
+					"\n",
+					"dfRetailSales.write\\\n",
+					"    .format(\"cosmos.oltp\")\\\n",
+					"    .option(\"spark.synapse.linkedService\", \"RetailSalesDemoDB\")\\\n",
+					"    .option(\"spark.cosmos.container\", \"RetailSales\")\\\n",
+					"    .option(\"spark.cosmos.write.upsertEnabled\", \"true\")\\\n",
+					"    .mode('append')\\\n",
+					"    .save()\n",
+					"\n",
+					"\n",
+					"dfProduct.write\\\n",
+					"    .format(\"cosmos.oltp\")\\\n",
+					"    .option(\"spark.synapse.linkedService\", \"RetailSalesDemoDB\")\\\n",
+					"    .option(\"spark.cosmos.container\", \"Products\")\\\n",
+					"    .option(\"spark.cosmos.write.upsertEnabled\", \"true\")\\\n",
+					"    .mode('append')\\\n",
+					"    .save()\n",
+					""
+				],
+				"execution_count": 2
+			}
+		]
+	}
+}
