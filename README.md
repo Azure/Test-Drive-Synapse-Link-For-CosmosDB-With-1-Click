@@ -1,7 +1,7 @@
 ## Azure Synapse Link For CosmosDB 1-click Environment
 This 1-click deployment allows the user to deploy an environment with Synapse Link, you can directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This scenario is to Ingest data into Cosmos DB containers, Setup Spark tables, Join & aggregate operational data across Cosmos DB containers.Pyspark Notebooks to Perform Sales Forecasting and Anomaly Detection using Azure Synapse Link,Azure Automated Machine Learning and Azure Cognitive Services on Synapse Spark (MMLSpark).
 
-![SynapseCosmosDB](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/synapse-cosmosdb.png)
+![SynapseCosmosDB](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/synapse-cosmosdb.png)
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ Owner role (or Contributor roles) for the Azure Subscription the template being 
  
 2. While in your forked repo,Click 'Deploy To Azure' button given below to deploy all the resources.
 
-    [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnashahz%2FTest-Drive-Synapse-Link-For-CosmosDB-With-1-Click%2Fmain%2Fazuredeploy.json)
+    [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FTest-Drive-Synapse-Link-For-CosmosDB-With-1-Click%2Fmain%2Fazuredeploy.json)
 
    - Provide the values for:
 
@@ -81,7 +81,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
 - After logging to your GitHub account, click on the 'Notebook' icon in the left panel. A blade will appear from the right side of the screen.
 - Make sure that the 'main' branch is selected as 'Working branch' and click 'Save'.
 
-![Start Workspace](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Start_Workspace2.gif)
+![Start Workspace](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Start_Workspace2.gif)
 
 #### Configuring Synapse Link for CosmosDB
 - In Synapse Studio click on the 'Manage' icon in the left panel and navigate to 'Linked Services' menu option.
@@ -93,7 +93,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
 - Select CosmosDB Databasename 'CosmosDemoDB'
 - Click 'Apply' to save the changes
 
-![Configure Comsos Link](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Configure_CosmosLink3.gif)
+![Configure Comsos Link](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Configure_CosmosLink3.gif)
 
 #### Navigating Synapse Link for CosmosDB
 - To verify CosmosDB Analytical store and containers
@@ -104,7 +104,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
   - Navigate to 'Data' section in the left panel and then to the 'Linked' menu option.
   - Expand 'Azure CosmosDB', There will be five containers listed with 'Analytical Store' enabled.
 
-![Navigate Synapse Link](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Navigate_Synapse_Link3.gif)
+![Navigate Synapse Link](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Navigate_Synapse_Link3.gif)
 
 #### Notebook Execution Using Synapse Link for CosmosDB
 - In Synapse Studio click on the 'Develop' icon in the left panel and navigate to the 'Notebooks' section.
@@ -115,13 +115,13 @@ This template deploys necessary resources to support an Azure Synapse link for C
   - Join spark tables using Synapse spark serverless
   - Execute Machine learning model on this dataset using Azure ML
 
-![Navigate Notebook](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Navigate_Notebook4.gif)
+![Navigate Notebook](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Navigate_Notebook4.gif)
 
 #### Verify Data in CosmosDB Containers
 - On completion of Notebook CosmosDB containers will be populated with a sample dataset.
 - Navigate to CosmosDB account,Under 'Data Explorer' tab you can see containers populated with data.
 
-![CosmosDB Populated Containers](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/CosmosDB_Containers_Data2.gif)
+![CosmosDB Populated Containers](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/CosmosDB_Containers_Data2.gif)
 
 #### Read and Explore CosmosDB data within Synapse studio Using Synapse Link for CosmosDB
 - In Synapse Studio navigate to 'Data' tab in the left menu,Once you are here click on 'Linked' tab.
@@ -130,11 +130,11 @@ This template deploys necessary resources to support an Azure Synapse link for C
 - Attach the already created Spark pool to Notebook and execute.
 - On successful completion,You should be able to see the resultset in Synapse Studio.
 
-![Read and Explore](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Read_Container2.gif)
+![Read and Explore](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Read_Container2.gif)
 
 #### Publish Changes
 - Once published all the resources will now be available in the live mode.
 - To switch to the live mode from git mode, click the drop-down at the top left corner and select 'Switch to live mode'.
 
-![Publish](https://github.com/nashahz/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Publish3.gif)
+![Publish](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Publish3.gif)
 
