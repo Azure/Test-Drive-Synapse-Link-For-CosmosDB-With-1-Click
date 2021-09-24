@@ -66,6 +66,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
   - IoTDeviceInfo
   - IoTSignals
 - AML workspace
+- Azure Cognitive Service
 - Pyspark Notebook to ingest batch data into CosmosDB containers, Fetch data from CosmosDB,Join dataset together,Perform Sales Forecasting using Azure Synapse Link and Azure Automated Machine Learning on Synapse Spark 
 - Pyspark Notebook to ingest stream and batch data into CosmosDB containers, Fetch data from CosmosDB,Join dataset together,Perform Anomaly Detection using Azure Synapse Link and Azure Cognitive Services on Synapse Spark (MMLSpark)
 
