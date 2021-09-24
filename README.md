@@ -1,4 +1,4 @@
-## Azure Synapse Link For CosmosDB 1-click Environment
+## Azure Synapse Link For CosmosDB 1-Click Environment
 This 1-click deployment allows the user to deploy an environment with Synapse Link, you can directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This scenario is to Ingest data into Cosmos DB containers, Setup Spark tables, Join & aggregate operational data across Cosmos DB containers.Pyspark Notebooks to Perform Sales Forecasting and Anomaly Detection using Azure Synapse Link,Azure Automated Machine Learning and Azure Cognitive Services on Synapse Spark (MMLSpark).
 
 ![SynapseCosmosDB](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/synapse-cosmosdb.png)
