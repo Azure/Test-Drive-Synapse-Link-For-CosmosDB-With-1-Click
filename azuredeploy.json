@@ -233,26 +233,15 @@
         "description": "Time of day when the data warehouse will be paused"
       }
     },
-    "transparentDataEncryption": {
-        "type": "string",
-        "defaultValue": "Enabled",
-        "allowedValues": [
-          "Enabled",
-          "Disabled"
-        ],
-        "metadata": {
-          "description": "Enable or Disable Transparent Data Encryption on SQL pool"
-        }
-    },
- "CosmosDBAccountName": {
+    "CosmosDBAccountName": {
       "type": "string",
-      "defaultValue": "[toLower(uniqueString(resourceGroup().id))]",
+      "defaultValue": "",
       "metadata": {
-        "description": "Cosmos DB account name"
+        "description": "CosmosDB Account Name"
       }
     },
 
-    "throughputPolicy": {
+    "CosmosDBThroughputPolicy": {
       "type": "string",
       "defaultValue": "Autoscale",
       "allowedValues": [
@@ -263,7 +252,7 @@
         "description": "The throughput policy for the container"
       }
     },
-    "manualProvisionedThroughput": {
+    "CosmosDBManualProvisionedThroughput": {
       "type": "int",
       "defaultValue": 400,
       "maxValue": 1000000,
@@ -272,7 +261,7 @@
         "description": "Throughput value when using Manual Throughput Policy for the container"
       }
     },
-    "autoscaleMaxThroughput": {
+    "CosmosDBAutoscaleMaxThroughput": {
       "type": "int",
       "defaultValue": 4000,
       "maxValue": 1000000,
@@ -281,7 +270,7 @@
         "description": "Maximum throughput when using Autoscale Throughput Policy for the container"
       }
     },
-    "analyticalStoreTTL": {
+    "CosmosDBAnalyticalStoreTTL": {
       "type": "int",
       "defaultValue": -1,
       "maxValue": 2147483647,
@@ -293,7 +282,7 @@
 	    "githubUsername": {
         "type": "string",
         "metadata": {
-          "description": "Username of your github account hosting synapse workspace resources"
+          "description": "Username for the account where this github repository was forked out into"
         }
     }
   },
@@ -322,11 +311,11 @@
     ],
     "throughput_Policy": {
       "Manual": {
-        "Throughput": "[parameters('manualProvisionedThroughput')]"
+        "Throughput": "[parameters('CosmosDBManualProvisionedThroughput')]"
       },
       "Autoscale": {
         "autoscaleSettings": {
-          "maxThroughput": "[parameters('autoscaleMaxThroughput')]"
+          "maxThroughput": "[parameters('CosmosDBAutoscaleMaxThroughput')]"
         }
       }
     }
@@ -577,17 +566,6 @@
           "properties": {
             "Enabled": "[parameters('metadataSync')]"
           }
-        },
-        {
-          "name": "current",
-          "type": "transparentDataEncryption",
-          "apiVersion": "2021-03-01",
-          "dependsOn": [
-            "[variables('sqlPoolName')]"
-          ],
-          "properties": {
-            "status": "[parameters('transparentDataEncryption')]"
-          }
         }
       ]
     },
@@ -688,10 +666,10 @@
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
       "apiVersion": "2021-04-15",
-      "name": "[format('{0}/{1}', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB')]",
+      "name": "[format('{0}/{1}', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]",
       "properties": {
         "resource": {
-          "id": "RetailSalesDemoDB"
+          "id": "CosmosDemoDB"
         }
       },
       "dependsOn": [
@@ -701,7 +679,7 @@
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
       "apiVersion": "2021-04-15",
-      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB', 'StoreDemoGraphics')]",
+      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'CosmosDemoDB', 'StoreDemoGraphics')]",
       "properties": {
         "resource": {
           "id": "StoreDemoGraphics",
@@ -711,19 +689,19 @@
             ],
             "kind": "Hash"
           },
-          "analyticalStorageTtl": "[parameters('analyticalStoreTTL')]"
+          "analyticalStorageTtl": "[parameters('CosmosDBAnalyticalStoreTTL')]"
         },
-        "options": "[variables('throughput_Policy')[parameters('throughputPolicy')]]"
+        "options": "[variables('throughput_Policy')[parameters('CosmosDBThroughputPolicy')]]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]",
-        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB')]"
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]"
       ]
     },
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
       "apiVersion": "2021-04-15",
-      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB', 'RetailSales')]",
+      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'CosmosDemoDB', 'RetailSales')]",
       "properties": {
         "resource": {
           "id": "RetailSales",
@@ -733,19 +711,19 @@
             ],
             "kind": "Hash"
           },
-          "analyticalStorageTtl": "[parameters('analyticalStoreTTL')]"
+          "analyticalStorageTtl": "[parameters('CosmosDBAnalyticalStoreTTL')]"
         },
-        "options": "[variables('throughput_Policy')[parameters('throughputPolicy')]]"
+        "options": "[variables('throughput_Policy')[parameters('CosmosDBThroughputPolicy')]]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]",
-        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB')]"
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]"
       ]
     },
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
       "apiVersion": "2021-04-15",
-      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB', 'Products')]",
+      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'CosmosDemoDB', 'Products')]",
       "properties": {
         "resource": {
           "id": "Products",
@@ -755,14 +733,71 @@
             ],
             "kind": "Hash"
           },
-          "analyticalStorageTtl": "[parameters('analyticalStoreTTL')]"
+          "analyticalStorageTtl": "[parameters('CosmosDBAnalyticalStoreTTL')]"
         },
-        "options": "[variables('throughput_Policy')[parameters('throughputPolicy')]]"
+        "options": "[variables('throughput_Policy')[parameters('CosmosDBThroughputPolicy')]]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]",
-        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'RetailSalesDemoDB')]"
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]"
       ]
+    },
+	    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2021-04-15",
+      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'CosmosDemoDB', 'IoTSignals')]",
+      "properties": {
+        "resource": {
+          "id": "IoTSignals",
+          "partitionKey": {
+            "paths": [
+              "/id"
+            ],
+            "kind": "Hash"
+          },
+          "analyticalStorageTtl": "[parameters('CosmosDBAnalyticalStoreTTL')]"
+        },
+        "options": "[variables('throughput_Policy')[parameters('CosmosDBThroughputPolicy')]]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]",
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]"
+      ]
+    },
+	    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2021-04-15",
+      "name": "[format('{0}/{1}/{2}', parameters('CosmosDBAccountName'), 'CosmosDemoDB', 'IoTDeviceInfo')]",
+      "properties": {
+        "resource": {
+          "id": "IoTDeviceInfo",
+          "partitionKey": {
+            "paths": [
+              "/id"
+            ],
+            "kind": "Hash"
+          },
+          "analyticalStorageTtl": "[parameters('CosmosDBAnalyticalStoreTTL')]"
+        },
+        "options": "[variables('throughput_Policy')[parameters('CosmosDBThroughputPolicy')]]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('CosmosDBAccountName'))]",
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('CosmosDBAccountName'), 'CosmosDemoDB')]"
+      ]
+    },
+	    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2017-04-18",
+      "name": "[toLower(concat(parameters('companyTla'),variables('deploymentType')))]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "CognitiveServices",
+      "properties": {
+        "statisticsEnabled": false
+      }
     }
   ]
 }

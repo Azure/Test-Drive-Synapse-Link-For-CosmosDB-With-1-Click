@@ -1,0 +1,636 @@
+{
+	"name": "2-AnomalyDetectionWithMML",
+	"properties": {
+		"bigDataPool": {
+			"referenceName": "ws1sparkpool1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/4eeedd72-d937-4243-86d1-c3982a84d924/resourceGroups/nashahz0922-01/providers/Microsoft.Synapse/workspaces/mcrgrnjtey4n67a4pocws1/bigDataPools/ws1sparkpool1",
+				"name": "ws1sparkpool1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				}
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"source": [
+					"# Leverage Power of Azure Synapse Link for Cosmos DB and Spark SQL\n",
+					"With Synapse Link, you can now directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This notebook scenario is to \n",
+					"\n",
+					"- Simulate streaming data generation using Rate streaming source\n",
+					"- Format the stream dataframe as per the IoTSignals schema\n",
+					"- Write the streaming dataframe to the Azure Cosmos DB collection\n",
+					""
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/synapse-cosmosdb.png\" alt=\"Surface Device\" width=\"75%\"/>\r\n",
+					"\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Replace the Cognitive Services API account Keys below before execution.Keys can be found under \"Keys and Endpoints\" Section\r\n",
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/AD_Ws_Varriables.gif\" alt=\"Surface Device\" width=\"75%\"/>\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Cognitive_Services_Key='<Cognitive Services Account Key>'"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Simulate Streaming Sata Generation using Rate Streaming Source\r\n",
+					"The Rate streaming source is used to simplify the solution here and can be replaced with any supported streaming sources such as Azure Event Hubs and Apache Kafka."
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"dfStream = (spark\r\n",
+					"                .readStream\r\n",
+					"                .format(\"rate\")\r\n",
+					"                .option(\"rowsPerSecond\", 10)\r\n",
+					"                .load()\r\n",
+					"            )"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Format the Stream Dataframe as per the IoTSignals Schema"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"import pyspark.sql.functions as F\n",
+					"from pyspark.sql.types import StringType\n",
+					"import uuid\n",
+					"\n",
+					"numberOfDevices = 10\n",
+					"generate_uuid = F.udf(lambda : str(uuid.uuid4()), StringType())\n",
+					"              \n",
+					"dfIoTSignals = (dfStream\n",
+					"                    .withColumn(\"id\", generate_uuid())\n",
+					"                    .withColumn(\"deviceId\", F.concat(F.lit(\"dev-\"), F.expr(\"mod(value, %d)\" % numberOfDevices)))\n",
+					"                    .withColumn(\"dateTime\", dfStream[\"timestamp\"].cast(StringType()))\n",
+					"                    .withColumn(\"unit\", F.expr(\"CASE WHEN rand() < 0.5 THEN 'Revolutions per Minute' ELSE 'MegaWatts' END\"))\n",
+					"                    .withColumn(\"unitSymbol\", F.expr(\"CASE WHEN rand() < 0.5 THEN 'RPM' ELSE 'MW' END\"))\n",
+					"                    .withColumn(\"measureType\", F.expr(\"CASE WHEN rand() < 0.5 THEN 'Rotation Speed' ELSE 'Output' END\"))\n",
+					"                    .withColumn(\"measureValue\", F.expr(\"CASE WHEN rand() > 0.95 THEN value * 10 WHEN rand() < 0.05 THEN value div 10 ELSE value END\"))\n",
+					"                    .drop(\"timestamp\", \"value\")\n",
+					"                )"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Stream Writes to the Azure Cosmos DB Collection\r\n",
+					"The \"cosmos.oltp\" is the Spark format that enables connection to the Cosmos DB Transactional store."
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"streamQuery = dfIoTSignals\\\r\n",
+					"                    .writeStream\\\r\n",
+					"                    .format(\"cosmos.oltp\")\\\r\n",
+					"                    .outputMode(\"append\")\\\r\n",
+					"                    .option(\"spark.cosmos.connection.mode\", \"gateway\") \\\r\n",
+					"                    .option(\"spark.synapse.linkedService\", \"CosmosDBLink\")\\\r\n",
+					"                    .option(\"spark.cosmos.container\", \"IoTSignals\")\\\r\n",
+					"                    .option(\"checkpointLocation\", \"/writeCheckpointDir\")\\\r\n",
+					"                    .start()\r\n",
+					"streamQuery.awaitTermination(180)\r\n",
+					"streamQuery.stop()"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Load the IoTDeviceInfo Dataset from ADLS Gen2 to a Dataframe and Write the Dataframe to the Azure Cosmos DB Collection\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"path = 'wasbs://cosmolnksynp@synapse1poc.blob.core.windows.net/cosmolnksynp/IoTDeviceInfo.csv'\r\n",
+					"dfDeviceInfo = spark.read.csv(path, header=True, inferSchema=True)\r\n",
+					"dfDeviceInfo.write\\\r\n",
+					"    .format(\"cosmos.oltp\")\\\r\n",
+					"    .option(\"spark.synapse.linkedService\", \"CosmosDBLink\")\\\r\n",
+					"    .option(\"spark.cosmos.container\", \"IoTDeviceInfo\")\\\r\n",
+					"    .option(\"spark.cosmos.write.upsertEnabled\", \"true\")\\\r\n",
+					"    .mode('append')\\\r\n",
+					"    .save()"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Create Spark Tables Pointing to the Azure Cosmos DB Analytical Store Collections using Azure Synapse Link\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"create database if not exists CosmosDBIoTDemoDB;\r\n",
+					"\r\n",
+					"create table if not exists CosmosDBIoTDemoDB.IoTSignals\r\n",
+					"using cosmos.olap\r\n",
+					"options(spark.synapse.linkedService 'CosmosDBLink',\r\n",
+					"        spark.cosmos.container 'IoTSignals');\r\n",
+					"\r\n",
+					"create table if not exists CosmosDBIoTDemoDB.IoTDeviceInfo\r\n",
+					"using cosmos.olap\r\n",
+					"options(spark.synapse.linkedService 'CosmosDBLink',\r\n",
+					"        spark.cosmos.container 'IoTDeviceInfo')\r\n",
+					""
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Perform Joins Across collections, Apply Filters and Aggregations using Spark SQL"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df_RPM_details = spark.sql(\"select a.deviceid \\\r\n",
+					"                                 , b.devicetype \\\r\n",
+					"                                 , cast(b.location as string) as location\\\r\n",
+					"                                 , cast(b.latitude as float) as latitude\\\r\n",
+					"                                 , cast(b.longitude as float) as  longitude\\\r\n",
+					"                                 , a.measuretype \\\r\n",
+					"                                 , a.unitSymbol \\\r\n",
+					"                                 , cast(sum(measureValue) as float) as measureValueSum \\\r\n",
+					"                                 , count(*) as count \\\r\n",
+					"                            from CosmosDBIoTDemoDB.IoTSignals a \\\r\n",
+					"                            left join CosmosDBIoTDemoDB.IoTDeviceInfo b \\\r\n",
+					"                            on a.deviceid = b.deviceid \\\r\n",
+					"                            where a.unitSymbol = 'RPM' \\\r\n",
+					"                            group by a.deviceid, b.devicetype, b.location, b.latitude, b.longitude, a.measuretype, a.unitSymbol\")\r\n",
+					"\r\n",
+					"display(df_RPM_details)"
+				],
+				"execution_count": 11
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Visualizations using Plotly and DisplayHTML()\r\n",
+					"Heatmap of IoT signals across diffrent locations\r\n",
+					"\r\n",
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/HeatMaPlot.png\" alt=\"Chart\" width=\"75%\"/>\r\n",
+					"\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from plotly.offline import plot\r\n",
+					"import plotly.express as px\r\n",
+					"\r\n",
+					"df_RPM_details_pd = df_RPM_details.toPandas()\r\n",
+					"fig = px.scatter_mapbox(df_RPM_details_pd, \r\n",
+					"                        lat='latitude', \r\n",
+					"                        lon='longitude', \r\n",
+					"                        size = 'measureValueSum',\r\n",
+					"                        color = 'measureValueSum',\r\n",
+					"                        hover_name = 'location',\r\n",
+					"                        hover_data = ['measureValueSum','location'],\r\n",
+					"                        size_max = 30,\r\n",
+					"                        color_continuous_scale = px.colors.carto.Temps,\r\n",
+					"                        zoom=3,\r\n",
+					"                        height=600,\r\n",
+					"                        width =900)\r\n",
+					"\r\n",
+					"fig.update_layout(mapbox_style='open-street-map')\r\n",
+					"fig.update_layout(margin={\"r\":0,\"t\":0,\"l\":0,\"b\":0})\r\n",
+					"\r\n",
+					"p = plot(fig,output_type='div')\r\n",
+					"displayHTML(p)"
+				],
+				"execution_count": 12
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Load the Data in Cosmos DB Analytical Store Collection into a Dataframe using Synapse Link"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": true
+				},
+				"source": [
+					"df_IoTSignals = spark.read\\\r\n",
+					"                    .format(\"cosmos.olap\")\\\r\n",
+					"                    .option(\"spark.synapse.linkedService\", \"CosmosDBLink\")\\\r\n",
+					"                    .option(\"spark.cosmos.container\", \"IoTSignals\")\\\r\n",
+					"                    .load()"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Data Exploration using Pyplot\r\n",
+					"\r\n",
+					"\r\n",
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/DataExPlot.png\" alt=\"Chart\" width=\"75%\"/>"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import pandas as pd\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"\r\n",
+					"df_IoTSignals_pd = df_IoTSignals.toPandas().dropna()\r\n",
+					"df_IoTSignals_pd['measureValue'] = df_IoTSignals_pd['measureValue'].astype(int)\r\n",
+					"\r\n",
+					"df_MW = df_IoTSignals_pd[(df_IoTSignals_pd['deviceId'] == 'dev-1') & (df_IoTSignals_pd['unitSymbol'] == 'MW')]\r\n",
+					"df_MW.plot(x='dateTime', y='measureValue', color='green', figsize=(20,5), label = 'Output MW')\r\n",
+					"plt.title('MW TimeSeries')\r\n",
+					"plt.show()\r\n",
+					"\r\n",
+					"df_RPM = df_IoTSignals_pd[(df_IoTSignals_pd['deviceId'] == 'dev-1') & (df_IoTSignals_pd['unitSymbol'] == 'RPM')]\r\n",
+					"df_RPM.plot(x='dateTime', y='measureValue', color='black', figsize=(20,5), label = 'Output RPM')\r\n",
+					"plt.title('RPM TimeSeries')\r\n",
+					"plt.show()"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Perform Anomaly Detection using Microsoft Machine Learning for Spark (MMLSpark)"
+				]
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from pyspark.sql.functions import col\n",
+					"from pyspark.sql.types import *\n",
+					"from mmlspark.cognitive import SimpleDetectAnomalies\n",
+					"from mmlspark.core.spark import FluentAPI\n",
+					"\n",
+					"anomaly_detector = (SimpleDetectAnomalies()\n",
+					"                            .setSubscriptionKey(Cognitive_Services_Key)\n",
+					"                            .setUrl(\"https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect\")\n",
+					"                            .setOutputCol(\"anomalies\")\n",
+					"                            .setGroupbyCol(\"grouping\")\n",
+					"                            .setSensitivity(95)\n",
+					"                            .setGranularity(\"secondly\"))\n",
+					"\n",
+					"df_anomaly = (df_IoTSignals\n",
+					"                    .where(col(\"unitSymbol\") == 'RPM')\n",
+					"                    .withColumnRenamed(\"dateTime\", \"timestamp\")\n",
+					"                    .withColumn(\"value\", col(\"measureValue\").cast(\"double\"))\n",
+					"                    .withColumn(\"grouping\", col(\"deviceId\"))\n",
+					"                    .mlTransform(anomaly_detector))\n",
+					"\n",
+					"df_anomaly.createOrReplaceTempView('df_anomaly')"
+				],
+				"execution_count": 15
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Format the Dataframe for Visualization\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df_anomaly_single_device = spark.sql(\"select timestamp \\\r\n",
+					"                                            , measureValue \\\r\n",
+					"                                            , anomalies.expectedValue \\\r\n",
+					"                                            , anomalies.expectedValue + anomalies.upperMargin as expectedUpperValue \\\r\n",
+					"                                            , anomalies.expectedValue - anomalies.lowerMargin as expectedLowerValue \\\r\n",
+					"                                            , case when anomalies.isAnomaly=true then 1 else 0 end as isAnomaly \\\r\n",
+					"                                        from df_anomaly \\\r\n",
+					"                                        where deviceid = 'dev-1' \\\r\n",
+					"                                        order by timestamp \\\r\n",
+					"                                        limit 400\")\r\n",
+					"\r\n",
+					"display(df_anomaly_single_device)"
+				],
+				"execution_count": 16
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Visualize the Anomalies using Plotly\r\n",
+					"Plot Expected value, Upper Value, Lower Value and Actual Value along with Anomaly flag\r\n",
+					"\r\n",
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/AnmaliesPlot.jpg\" alt=\"Chart\" width=\"75%\"/>\r\n",
+					""
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"##import chart_studio.plotly as py\r\n",
+					"import plotly.graph_objs as go\r\n",
+					"from plotly.offline import plot\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"from pyspark.sql.functions import col\r\n",
+					"from matplotlib.pyplot import figure\r\n",
+					" \r\n",
+					"adf = df_anomaly_single_device.toPandas()\r\n",
+					"adf_subset = df_anomaly_single_device.where(col(\"isAnomaly\") == 1).toPandas() \r\n",
+					"\r\n",
+					"plt.figure(figsize=(23,8))\r\n",
+					"plt.plot(adf['timestamp'],adf['expectedUpperValue'], color='darkred', linestyle='solid', linewidth=0.25)\r\n",
+					"plt.plot(adf['timestamp'],adf['expectedValue'], color='darkgreen', linestyle='solid', linewidth=2)\r\n",
+					"plt.plot(adf['timestamp'],adf['measureValue'], 'b', color='royalblue', linestyle='dotted', linewidth=2)\r\n",
+					"plt.plot(adf['timestamp'],adf['expectedLowerValue'],  color='black', linestyle='solid', linewidth=0.25)\r\n",
+					"plt.plot(adf_subset['timestamp'],adf_subset['measureValue'], 'ro')\r\n",
+					"plt.legend(['RPM-UpperMargin', 'RPM-ExpectedValue', 'RPM-ActualValue', 'RPM-LowerMargin', 'RPM-Anomaly'])\r\n",
+					"plt.title('RPM Anomalies with Expected, Actual, Upper and Lower Values')\r\n",
+					"plt.show()"
+				],
+				"execution_count": 17
+			}
+		]
+	}
+}
