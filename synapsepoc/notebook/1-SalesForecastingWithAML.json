@@ -77,7 +77,7 @@
 					}
 				},
 				"source": [
-					"### Replace all \"AML\" placeholders with your own information,Replace subscription_id , resource_group with values beofore execution\r\n",
+					"### Replace all \"AML\" placeholders with your own information,Replace subscription_id , resource_group with values before execution\r\n",
 					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/SF_Ws_Variables.gif\" alt=\"Surface Device\" width=\"75%\"/>\r\n",
 					""
 				]
