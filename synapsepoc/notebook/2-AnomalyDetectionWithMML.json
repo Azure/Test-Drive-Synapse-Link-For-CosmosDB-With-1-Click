@@ -108,7 +108,7 @@
 					}
 				},
 				"source": [
-					"## Simulate Streaming Sata Generation using Rate Streaming Source\r\n",
+					"## Simulate Streaming Data Generation using Rate Streaming Source\r\n",
 					"The Rate streaming source is used to simplify the solution here and can be replaced with any supported streaming sources such as Azure Event Hubs and Apache Kafka."
 				]
 			},
