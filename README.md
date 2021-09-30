@@ -8,7 +8,7 @@ This 1-click deployment allows the user to deploy an environment with Synapse Li
 Owner role (or Contributor roles) for the Azure Subscription the template being deployed in. This is for the creation of a separate Resource Group and to delegate roles necessary for this proof of concept. Refer to this [official documentation](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for RBAC role-assignments.
 
 ## Deployment Steps
-1. - Fork Out [This GitHub Repository](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click) into your GitHub account. 
+1. -Fork Out [This GitHub Repository](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click) into your GitHub account. 
     
    **If you don't fork repo:** 
    + **Notebook will not be deployed**
