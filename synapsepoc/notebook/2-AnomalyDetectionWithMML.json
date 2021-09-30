@@ -44,10 +44,12 @@
 					"# Leverage Power of Azure Synapse Link for Cosmos DB and Spark SQL\n",
 					"With Synapse Link, you can now directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This notebook scenario is to \n",
 					"\n",
-					"- Simulate streaming data generation using Rate streaming source\n",
+					"- Ingest streaming data into Azure Cosmos DB collection using Structured Streaming\n",
+					"- Ingest Batch data into Azure Cosmos DB collection using Azure Synapse Spark\n",
 					"- Format the stream dataframe as per the IoTSignals schema\n",
 					"- Write the streaming dataframe to the Azure Cosmos DB collection\n",
-					""
+					"- Perform Joins and aggregations across Azure Cosmos DB collections using Azure Synapse Link\n",
+					"- Perform Anomaly Detection using Azure Synapse Link and Azure Cognitive Services on Synapse Spark (MMLSpark)"
 				]
 			},
 			{
