@@ -48,8 +48,11 @@
 				"cell_type": "markdown",
 				"source": [
 					"# Leverage Power of Azure Synapse Link for Cosmos DB and Spark SQL\n",
-					"With Synapse Link, you can now directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This notebook scenario is to Ingest data into Cosmos DB containers, Setup Spark tables, Join & aggregate operational data across Cosmos DB containers and Near real-time sales forecasting using Synapse Link for Cosmos DB\n",
-					""
+					"With Synapse Link, you can now directly connect to your Azure Cosmos DB containers from Azure Synapse Analytics and access the analytical store with no separate connectors. This notebook scenario is to \n",
+					"- Ingest data into Cosmos DB containers using Azure Synapse Spark\n",
+					"- Setup Spark tables\n",
+					"- Join & aggregate operational data across Cosmos DB containers\n",
+					"- Perform Near real-time Sales Forecasting using Azure Automated Machine Learning using Synapse Link for Cosmos DB"
 				]
 			},
 			{
