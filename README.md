@@ -49,7 +49,7 @@ Owner role (or Contributor roles) for the Azure Subscription the template being 
 
 ## Azure Services being Deployed
 This template deploys necessary resources to support an Azure Synapse link for CosmosDB which includes the following resources along with some RBAC role assignments.
-**All resources with (Synapse Dedicated SQL pool at 100 DWU) cost around $500-$700 per month.**
+***All resources with (Synapse Dedicated SQL pool at 100 DWU) cost around $500-$700 per month.***
 
 - An Azure Synapse Workspace 
 - An Azure Synapse SQL Pool
