@@ -1,6 +1,8 @@
 {
 	"name": "2-AnomalyDetectionWithMML",
 	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
 		"bigDataPool": {
 			"referenceName": "ws1sparkpool1",
 			"type": "BigDataPoolReference"
@@ -10,11 +12,11 @@
 			"driverCores": 8,
 			"executorMemory": "56g",
 			"executorCores": 8,
-			"numExecutors": 2,
+			"numExecutors": 19,
 			"conf": {
 				"spark.dynamicAllocation.enabled": "false",
-				"spark.dynamicAllocation.minExecutors": "2",
-				"spark.dynamicAllocation.maxExecutors": "2"
+				"spark.dynamicAllocation.minExecutors": "19",
+				"spark.dynamicAllocation.maxExecutors": "19"
 			}
 		},
 		"metadata": {
@@ -28,12 +30,19 @@
 				"name": "python"
 			},
 			"a365ComputeOptions": {
-				"id": "/subscriptions/4eeedd72-d937-4243-86d1-c3982a84d924/resourceGroups/nashahz0922-01/providers/Microsoft.Synapse/workspaces/mcrgrnjtey4n67a4pocws1/bigDataPools/ws1sparkpool1",
+				"id": "/subscriptions/4eeedd72-d937-4243-86d1-c3982a84d924/resourceGroups/nashahz1007-02/providers/Microsoft.Synapse/workspaces/navzhtz6rgwnfydapocws1/bigDataPools/ws1sparkpool1",
 				"name": "ws1sparkpool1",
+				"type": "Spark",
+				"endpoint": "https://navzhtz6rgwnfydapocws1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/ws1sparkpool1",
 				"auth": {
 					"type": "AAD",
 					"authResource": "https://dev.azuresynapse.net"
-				}
+				},
+				"sparkVersion": "2.4",
+				"nodeCount": 5,
+				"cores": 8,
+				"memory": 56,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -98,7 +107,7 @@
 				"source": [
 					"Cognitive_Services_Key='<Cognitive Services Account Key>'"
 				],
-				"execution_count": 1
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -136,7 +145,7 @@
 					"                .load()\r\n",
 					"            )"
 				],
-				"execution_count": 2
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -175,7 +184,7 @@
 					"                    .drop(\"timestamp\", \"value\")\n",
 					"                )"
 				],
-				"execution_count": 3
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -217,7 +226,7 @@
 					"streamQuery.awaitTermination(180)\r\n",
 					"streamQuery.stop()"
 				],
-				"execution_count": 4
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -257,7 +266,7 @@
 					"    .mode('append')\\\r\n",
 					"    .save()"
 				],
-				"execution_count": 5
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -305,7 +314,7 @@
 					"        spark.cosmos.container 'IoTDeviceInfo')\r\n",
 					""
 				],
-				"execution_count": 10
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -352,7 +361,7 @@
 					"\r\n",
 					"display(df_RPM_details)"
 				],
-				"execution_count": 11
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
@@ -409,7 +418,7 @@
 					"p = plot(fig,output_type='div')\r\n",
 					"displayHTML(p)"
 				],
-				"execution_count": 12
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -445,7 +454,7 @@
 					"                    .option(\"spark.cosmos.container\", \"IoTSignals\")\\\r\n",
 					"                    .load()"
 				],
-				"execution_count": 13
+				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
@@ -493,7 +502,7 @@
 					"plt.title('RPM TimeSeries')\r\n",
 					"plt.show()"
 				],
-				"execution_count": 14
+				"execution_count": 12
 			},
 			{
 				"cell_type": "markdown",
@@ -518,7 +527,7 @@
 					"\n",
 					"anomaly_detector = (SimpleDetectAnomalies()\n",
 					"                            .setSubscriptionKey(Cognitive_Services_Key)\n",
-					"                            .setUrl(\"https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect\")\n",
+					"                            .setLocation('southcentralus') ##Optional, Update If Required\n",
 					"                            .setOutputCol(\"anomalies\")\n",
 					"                            .setGroupbyCol(\"grouping\")\n",
 					"                            .setSensitivity(95)\n",
@@ -533,7 +542,26 @@
 					"\n",
 					"df_anomaly.createOrReplaceTempView('df_anomaly')"
 				],
-				"execution_count": 15
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"display(df_anomaly)"
+				],
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -577,7 +605,7 @@
 					"\r\n",
 					"display(df_anomaly_single_device)"
 				],
-				"execution_count": 16
+				"execution_count": 15
 			},
 			{
 				"cell_type": "markdown",
@@ -592,7 +620,7 @@
 					"## Visualize the Anomalies using Plotly\r\n",
 					"Plot Expected value, Upper Value, Lower Value and Actual Value along with Anomaly flag\r\n",
 					"\r\n",
-					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/AnmaliesPlot.jpg\" alt=\"Chart\" width=\"75%\"/>\r\n",
+					"<img src=\"https://synapse1poc.blob.core.windows.net/cosmolnksynp/cosmolnksynp/AnmaliesPlot.png\" alt=\"Chart\" width=\"75%\"/>\r\n",
 					""
 				]
 			},
@@ -631,7 +659,7 @@
 					"plt.title('RPM Anomalies with Expected, Actual, Upper and Lower Values')\r\n",
 					"plt.show()"
 				],
-				"execution_count": 17
+				"execution_count": 16
 			}
 		]
 	}
