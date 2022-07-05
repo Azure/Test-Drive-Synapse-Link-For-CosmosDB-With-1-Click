@@ -104,7 +104,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
   - To check the pre-created database and containers with Analytical store navigate to 'Data Explorer' tab.
 - In Synapse Studio you can see the same CosmosDB containers configured 
   - Navigate to 'Data' section in the left panel and then to the 'Linked' menu option.
-  - Expand 'Azure CosmosDB', There will be five containers listed with 'Analytical Store' enabled.
+  - Expand 'Azure Cosmos DB', There will be five containers listed with 'Analytical Store' enabled.
 
 ![Navigate Synapse Link](https://github.com/Azure/Test-Drive-Synapse-Link-For-CosmosDB-With-1-Click/blob/main/images/Navigate_Synapse_Link3.gif)
 
@@ -127,7 +127,7 @@ This template deploys necessary resources to support an Azure Synapse link for C
 
 #### Read and Explore CosmosDB data within Synapse studio Using Synapse Link for CosmosDB
 - In Synapse Studio navigate to 'Data' tab in the left menu,Once you are here click on 'Linked' tab.
-- Expand the 'Azure CosmosDB' option and right click container you want to load the dataframe for.
+- Expand the 'Azure Cosmos DB' option and right click container you want to load the dataframe for.
 - On-Right click section select 'New Notebook' then 'Load to DataFrame'.
 - Attach the already created Spark pool to Notebook and execute.
 - On successful completion,You should be able to see the resultset in Synapse Studio.
